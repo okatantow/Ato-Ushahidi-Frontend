@@ -2,6 +2,11 @@ import { React, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
+import { useLocation, useHistory } from "react-router-dom";
+import { toggleLoadingBar, selectLoadingBar, toggleToaster, selectToasterData, selectToasterStatus } from 'provider/features/helperSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import LoadingIcon from 'others/icons/LoadingIcon';
+import axiosInstance from "services/axios";
 // react-bootstrap components
 import {
     Badge,
@@ -23,6 +28,8 @@ import PreviewInfo from "./PreviewInfo";
 function CreateDeploymentPage(props) {
     const [pending, setPending] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    let navigate = useHistory();
+    const dispatch = useDispatch();
     const toggleCurrentPage = (type) => {
 
         if (type === 'add') {
@@ -43,7 +50,112 @@ function CreateDeploymentPage(props) {
 
         }
     }
-    const handleSubmit = () => { };
+    const [formValue, setFormValue] = useState(
+        {
+            url: '',
+            name: '',
+            deployment_category: '',
+            organization_name: '',
+            size_of_organization: '',
+            display_name: '',
+            email: '',
+            password: '',
+            admin_name: '',
+        }
+    );
+    const handleChange = (event) => {
+        setFormValue({
+            ...formValue,
+            [event.target.name]: event.target.value
+        });
+
+        // console.log(formValue);
+    }
+
+    const [invalidFields, setInvalidFields] = useState('');
+    function validatedeploymentData(deploymentData, setInvalidFields) {
+        const invalidFields = []; // Array to store invalid field messages
+
+        // Check for empty required fields
+        if (!deploymentData.url) {
+            invalidFields.push('Deployment Url');
+        }
+        if (!deploymentData.name) {
+            invalidFields.push('Name');
+        }
+        if (!deploymentData.deployment_category) {
+            invalidFields.push('Catchment Area');
+        }
+        if (!deploymentData.size_of_organization) {
+            invalidFields.push('Organization Size');
+        }
+        if (!deploymentData.organization_name) {
+            invalidFields.push('Organization Name');
+        }
+        if (!deploymentData.email) {
+            invalidFields.push('Email');
+        }
+        if (!deploymentData.display_name) {
+            invalidFields.push('Display Name');
+        }
+        if (!deploymentData.admin_name) {
+            invalidFields.push('Admin Name');
+        }
+        if (!deploymentData.password) {
+            invalidFields.push('Password');
+        }
+
+
+        if (invalidFields.length > 0) {
+            const errorText = `Please fill in the following required fields: ${invalidFields.join(', ')}`;
+            setInvalidFields(errorText); // Update state with comma-separated error message
+            // alert(invalidFields);
+            return false; // Invalid data
+        }
+
+        return true; // Valid data
+    }
+
+    const handleSubmit = () => {
+        if (validatedeploymentData(formValue, setInvalidFields)) {
+              createDeployment(formValue);
+
+        } else {
+            setTimeout(() => {
+                // Your data here
+                setInvalidFields("");
+            }, 8000)
+        }
+
+    };
+    const createDeployment = async (data) => {
+
+        setPending(true);
+        const results = await axiosInstance.post('createDeployment',
+            JSON.stringify(data),
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${localStorage.getItem('access')}`
+                },
+                //   withCredentials: true
+            }
+        );
+        let res = results?.data;
+        if (res?.status == 'success') {
+            console.log(results?.data);
+            setPending(false);
+
+            dispatch(toggleToaster({ isOpen: true, toasterData: { type: "success", msg:"Deployment Created You Can Login Now" } }));
+            // setCurrentPage(1);
+            navigate.push('/pages/login');
+            // props.populateList(results?.data);
+
+        }else{
+            dispatch(toggleToaster({ isOpen: true, toasterData: { type: "error", msg: res?.message+" You Can Login Now" } }));
+            setCurrentPage(1);
+        }
+    }
     return (
         <>
             <motion.div
@@ -111,7 +223,7 @@ function CreateDeploymentPage(props) {
 
                                             <div className="grid grid-cols-1 md:flex md:items-start md:justify-between p-2 gap-2">
                                                 {/* #3B404C,bg-blue-500 */}
-                                                <div className="md:min-h-[450px] w-full md:w-4/12 bg-[#3B404C] shadow-md rounded-md p-2">
+                                                <div className="md:min-h-[480px] w-full md:w-4/12 bg-[#3B404C] shadow-md rounded-md p-2">
                                                     <div className="p-4 grid grid-cols-4 gap-2 md:grid-cols-1">
                                                         <div className="flex items-start justify-start mb-3">
 
@@ -155,30 +267,24 @@ function CreateDeploymentPage(props) {
                                                 </div>
                                                 <div className="md:min-h-[150px] w-full md:w-8/12 bg-white md:pl-5 md:p-3">
                                                     {parseInt(currentPage) == 1 &&
-                                                         <DeploymentInfo />
+                                                        <DeploymentInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
                                                     }
                                                     {parseInt(currentPage) == 2 &&
-                                                        <OrganizationInfo />
+                                                        <OrganizationInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
                                                     }
                                                     {parseInt(currentPage) == 3 &&
-                                                         <AccountInfo />
+                                                        <AccountInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
                                                     }
                                                     {parseInt(currentPage) == 4 &&
-                                                         <PreviewInfo />
+                                                        <PreviewInfo formValue={formValue} />
                                                     }
-                                                   
+
                                                     <div className='flex items-center justify-between mt-4'>
 
 
 
                                                         {parseInt(currentPage) > 1 &&
-                                                            // <a className="btn  px-4 flex justify-between" onClick={() => toggleCurrentPage('substract')}>
-                                                            //     <span className="p-1 mr-2 rounded-md">
-                                                            //         <FaArrowLeft className="w-4 h-4" />
 
-                                                            //     </span>
-                                                            //     Back
-                                                            // </a>
                                                             <a onClick={() => toggleCurrentPage('substract')}
                                                                 className="bg-white btn text-black active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
                                                                 type="button" variant="warning"
@@ -196,31 +302,23 @@ function CreateDeploymentPage(props) {
                                                             >
                                                                 Next  <i className="fas fa-arrow-alt-circle-right"></i>
                                                             </a>
-                                                            // <a className="btn flex  px-4 justify-between" onClick={() => toggleCurrentPage('add')}>
-                                                            //     Next
-                                                            //     <span className="p-1 ml-2 rounded-md">
-                                                            //         <FaArrowRight className="w-4 h-4" />
 
-                                                            //     </span>
-
-                                                            // </a>
                                                         }
                                                         {parseInt(currentPage) == 4 &&
                                                             <>
-                                                                {/* {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)} */}
-                                                                {/* <div className="modal-action"> */}
-                                                                {/* <button className="btn" onClick={() => { setCurrentPage(1); props.closeModal(); setPending(false) }}>Cancel</button> */}
+                                                                {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)}
 
                                                                 {pending ? <button className="btn bg-blue-500 text-black hover:bg-blue-700" disabled={true}><LoadingIcon /> processing..</button> : <>
                                                                     {/* <a onClick={handleSubmit} className="btn bg-blue-500 text-black hover:bg-blue-700">Submit </a>  */}
-                                                                    <Link
+                                                                    <button
                                                                         //  onClick={() => toggleCurrentPage('add')}
-                                                                        to="/deployment/map_view"
-                                                                        className="bg-white btn text-black active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
+                                                                        onClick={handleSubmit}
+                                                                        // to="/deployment/map_view"
+                                                                        className="bg-blue-700 btn text-black active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
                                                                         type="button" variant="warning"
                                                                     >
                                                                         Submit  <i className="fas fa-arrow-alt-circle-ok"></i>
-                                                                    </Link>
+                                                                    </button>
                                                                     {/* <a onClick={handleUpdate} className="btn bg-green-500 text-white hover:bg-green-700">Update </a> */}
 
                                                                 </>

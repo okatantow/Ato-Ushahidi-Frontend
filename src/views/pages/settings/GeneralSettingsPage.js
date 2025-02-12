@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import {React,useState,useEffect} from "react";
 
 // react-bootstrap components
 import {
@@ -15,8 +15,18 @@ import {
 } from "react-bootstrap";
 import { useLocation, NavLink } from "react-router-dom";
 
-function GeneralSettingsPage() {
-//   const [currentPage, setCurrentPage] = useState('general');
+function GeneralSettingsPage(props) {
+  const [settingsData, setSettingsData] = useState();
+  const [deploymentData, setDeploymentData] = useState([]);
+// console.log('settingsData');
+// console.log(settingsData);
+useEffect(()=>{
+  // console.log('settingsData');
+  // console.log(props?.settingsData)
+  setSettingsData(props?.settingsData);
+  setDeploymentData(props?.deploymentData);
+  // console.log(dData);
+},[]);
    
   return (
     <>
@@ -28,120 +38,69 @@ function GeneralSettingsPage() {
               <Card.Body>
                 
                 <Form>
-                  <Row>
-                    <Col className="pr-1" md="5">
+                <Row>
+                    <Col className="pr-1" md="12">
                       <Form.Group>
-                        <label>Company (disabled)</label>
+                        <label>Deployment Name {deploymentData?.name}</label>
                         <Form.Control
-                          defaultValue="Creative Code Inc."
+                          defaultValue="deployment."
                           disabled
-                          placeholder="Company"
+                          placeholder="Deployment Name"
                           type="text"
+                          name="name"
+                          value={props?.deploymentData?.name}
                         ></Form.Control>
                       </Form.Group>
                     </Col>
-                    <Col className="px-1" md="3">
+                    
+                   
+                  </Row>
+                  <Row>
+                    <Col md="12">
                       <Form.Group>
-                        <label>SettingsPagename</label>
+                        <label>About </label>
                         <Form.Control
-                          defaultValue="michael23"
-                          placeholder="SettingsPagename"
-                          type="text"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                    <Col className="pl-1" md="4">
-                      <Form.Group>
-                        <label htmlFor="exampleInputEmail1">
-                          Email address
-                        </label>
-                        <Form.Control
-                          placeholder="Email"
-                          type="email"
-                        ></Form.Control>
+                          cols="80"
+                          
+                          placeholder="Describe Your Site Or Deployment"
+                          rows="4"
+                          as="textarea"
+                          value={props?.deploymentData?.about}
+                        >
+                          
+                        </Form.Control>
                       </Form.Group>
                     </Col>
                   </Row>
                   <Row>
                     <Col className="pr-1" md="6">
                       <Form.Group>
-                        <label>First Name</label>
+                        <label>Display Name</label>
                         <Form.Control
-                          defaultValue="Mike"
+                        
                           placeholder="Company"
                           type="text"
+                          value={props?.deploymentData?.display_name}
                         ></Form.Control>
                       </Form.Group>
                     </Col>
+                    
                     <Col className="pl-1" md="6">
                       <Form.Group>
-                        <label>Last Name</label>
+                        <label htmlFor="exampleInputEmail1">
+                          Contact Email address
+                        </label>
                         <Form.Control
-                          defaultValue="Andrew"
-                          placeholder="Last Name"
-                          type="text"
+                          placeholder="Email"
+                          type="email"
+                          disabled
+                          value={props?.deploymentData?.email}
                         ></Form.Control>
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col md="12">
-                      <Form.Group>
-                        <label>Address</label>
-                        <Form.Control
-                          defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                          placeholder="Home Address"
-                          type="text"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-1" md="4">
-                      <Form.Group>
-                        <label>City</label>
-                        <Form.Control
-                          defaultValue="Mike"
-                          placeholder="City"
-                          type="text"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                    <Col className="px-1" md="4">
-                      <Form.Group>
-                        <label>Country</label>
-                        <Form.Control
-                          defaultValue="Andrew"
-                          placeholder="Country"
-                          type="text"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                    <Col className="pl-1" md="4">
-                      <Form.Group>
-                        <label>Postal Code</label>
-                        <Form.Control
-                          placeholder="ZIP Code"
-                          type="number"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">
-                      <Form.Group>
-                        <label>About Me</label>
-                        <Form.Control
-                          cols="80"
-                          defaultValue="Lamborghini Mercy, Your chick she so thirsty, I'm in
-                          that two seat Lambo."
-                          placeholder="Here can be your description"
-                          rows="4"
-                          as="textarea"
-                        ></Form.Control>
-                      </Form.Group>
-                    </Col>
-                  </Row>
+<br/>
+<br/>
                   <Button
                     className="btn-fill pull-right"
                     type="submit"

@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState,useEffect } from "react";
 
 // react-bootstrap components
 import {
@@ -13,7 +13,16 @@ import {
   Col,
   Tab
 } from "react-bootstrap";
-import { useLocation, NavLink } from "react-router-dom";
+
+import { useLocation,useHistory } from "react-router-dom";
+
+import {toggleLoadingBar,selectLoadingBar,toggleToaster,selectToasterData,selectToasterStatus} from 'provider/features/helperSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import LoadingIcon from 'others/icons/LoadingIcon';
+import  axiosInstance  from "services/axios";
+import {login,logout, selectUser} from 'provider/features/userSlice';
+
+
 import GeneralSettingsPage from "./GeneralSettingsPage";
 import SurveysPage from "./SurveysPage";
 import CategoryPage from "./CategoryPage";
@@ -21,9 +30,67 @@ import UsersPage from "./UsersPage";
 import RolesPage from "./RolesPage";
 
 function SettingsPage() {
+  const [pending, setPending] = useState(false);
+  const [pendingComplete, setPendingComplete] = useState(false);
+  const [deploymentData, setDeploymentData] = useState(false);
+  let locat = useLocation();
+   const dispatch = useDispatch();
+  let navigate = useHistory();
   const [currentPage, setCurrentPage] = useState('general');
+
   const toggleCurrentPage = (page) => {
     setCurrentPage(page);
+}
+useEffect(()=>{
+  let deployment = localStorage.getItem('deployment');
+  if (deployment && deployment !== undefined) { 
+    // let dData = JSON.parse(localStorage.getItem('deployment') ?? '{}');
+     getDeploymentData(JSON.parse(deployment).id);
+   
+    // console.log(JSON.parse(deployment));
+    // console.log(JSON.parse(deployment).id);
+  }
+  
+},[]);
+
+const getDeploymentData = async (deployment_id)=>{
+  try {
+      const response = await axiosInstance.get('getDeploymentData/'+deployment_id,
+        {
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": `Bearer ${localStorage.getItem('access')}`
+           },
+          //   withCredentials: true
+        }
+    );
+    // console.log(response)
+    
+    // console.log(JSON.stringify(response?.data));
+   if(response?.data){
+    let dData = response?.data?.deployment_data;
+    setDeploymentData(dData);
+    // console.log(dData);
+
+   }
+    } catch (err) {
+      
+      if (!err?.response) {
+      dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:"Loading Failed, Check your internet and try again"}}))
+    } else if (err.response?.status === 400) {
+       dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:loginErrors}}))
+    } else if (err.response?.status === 401) {
+      dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:err?.response.data['detail']}}))
+
+    } else {
+      
+      dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:"Loading Failed, Check your internet and try again"}}))
+      
+    }
+  
+    }
+
+
 
 }
   return (
@@ -84,7 +151,7 @@ function SettingsPage() {
           </Col>
           <Col md="9">
             {currentPage == 'general' &&
-              <GeneralSettingsPage />
+              <GeneralSettingsPage deploymentData={deploymentData?.deployment} SettingsData ={deploymentData?.settings}/>
             }
             {currentPage == "surveys" &&
               <SurveysPage />

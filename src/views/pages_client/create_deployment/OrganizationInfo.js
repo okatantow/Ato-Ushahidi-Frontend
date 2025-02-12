@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 
-function OrganizationInfo() {
+function OrganizationInfo(props) {
     return (
         <>
             <motion.div
@@ -26,7 +26,7 @@ function OrganizationInfo() {
                 }}
                 className="nav-bar"
             >
-                <Form className="md:min-h-[367px]">
+                <Form className="md:min-h-[387px]">
                 <h3 className="block items-start text-blue-900 font-bold text-[17px] md:text-[20px] pt-0 mt-0" style={{ textAlign: "left" }}>Organization Information</h3>
                 <p className="hidden md:block items-start text-gray-500" style={{ textAlign: "left" }}>Please provide your Organization name, size and Area</p>
 
@@ -36,6 +36,10 @@ function OrganizationInfo() {
                             type="text"
                             placeholder="Organzation Name  "
                             autoFocus
+                            onChange={props.handleChange}
+                            name="organization_name"
+                            value={props.formValue.organization_name}
+                            required
                         />
                     </Form.Group>
                     <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
@@ -44,6 +48,10 @@ function OrganizationInfo() {
                             type="text"
                             placeholder="Organization Size : 1-10,11-25,26-50  "
                             autoFocus
+                            onChange={props.handleChange}
+                            name="size_of_organization"
+                            value={props.formValue.size_of_organization}
+                            required
                         />
                     </Form.Group>
 
@@ -53,7 +61,7 @@ function OrganizationInfo() {
                     >
                         <Form.Label className="block items-start text-blue-900" style={{ textAlign: "left" }}>What are you using overwatch for?<span className="pl-2 text-sm text-[0.6em] text-gray-500">Catchment Area</span></Form.Label>
                         
-                        <Form.Select aria-label="Default select example">
+                        <Form.Select aria-label="Default select example" required onChange={props.handleChange} value={props.formValue.deployment_category} name="deployment_category">
                             <option>Open this select menu</option>
                             <option value="1">Advocacy</option>
                             <option value="2">Anti-Corruption & Transparency</option>

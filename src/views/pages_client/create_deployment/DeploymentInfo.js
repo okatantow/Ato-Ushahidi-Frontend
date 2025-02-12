@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 
-function DeploymentInfo() {
+function DeploymentInfo(props) {
     return (
         <>
             <motion.div
@@ -27,7 +27,7 @@ function DeploymentInfo() {
                 className="nav-bar"
             >
                 
-                <Form className="md:min-h-[367px]">
+                <Form className="md:min-h-[387px]">
                 <h3 className="block items-start text-blue-900 font-bold text-[17px] md:text-[20px] pt-0 mt-0" style={{ textAlign: "left" }}>Deployment Information</h3>
                 <p className="hidden md:block items-start text-gray-500" style={{ textAlign: "left" }}>Please provide your deployment name, dloyement url</p>
                     <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start mt-1" controlId="exampleForm.ControlInput1">
@@ -36,15 +36,26 @@ function DeploymentInfo() {
                             type="text"
                             placeholder="Title of your deployment  "
                             autoFocus
+                            onChange={props.handleChange}
+                            name="name"
+                            value={props.formValue.name}
+                            required
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
+                    <Form.Group className="mb-1 grid grid-cols-1  items-start justify-start" >
                         <Form.Label className="block items-start text-blue-950" style={{ textAlign: "left" }}>Deployment URL<span className="pl-2 text-sm text-[0.6em] text-gray-500">Web Address of your deployment</span></Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Title of your deployment"
+                            placeholder="url "
                             autoFocus
+                            name="url"
+                            onChange={props.handleChange}
+                            value={props.formValue.url}
+                            required
                         />
+                    </Form.Group>
+                    <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
+                        <Form.Label className="block items-start text-green-950" style={{ textAlign: "left" }}>eg: url.overwatch.com<span className="pl-2 text-sm text-[0.6em] text-gray-500">your deployment url</span></Form.Label>
                     </Form.Group>
                     {/* <Form.Group
                         className="mb-3 grid grid-cols-1  items-start"

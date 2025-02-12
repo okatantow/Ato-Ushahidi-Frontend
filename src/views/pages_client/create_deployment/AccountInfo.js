@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 
-function AccountInfo() {
+function AccountInfo(props) {
     return (
         <>
             <motion.div
@@ -34,8 +34,22 @@ function AccountInfo() {
                         <div className="block items-start text-blue-900" style={{ textAlign: "left" }}>Display Name<span className="pl-2 text-sm text-[0.7em] text-gray-500">Display Name</span></div>
                         <Form.Control
                             type="text"
-                            placeholder="Title of your deployment  "
+                            placeholder="Display Name  "
                             autoFocus
+                            onChange={props.handleChange}
+                            name="display_name"
+                            value={props.formValue.display_name}
+                            required
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
+                        <Form.Label className="block items-start text-blue-900" style={{ textAlign: "left" }}>Admin Name<span className="pl-2 text-sm text-[0.6em] text-gray-500">Full Name of Administrator</span></Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Name of site Admin "
+                            name="admin_name"
+                            onChange={props.handleChange}
+                            value={props.formValue.admin_name}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
@@ -43,7 +57,9 @@ function AccountInfo() {
                         <Form.Control
                             type="email"
                             placeholder="Login Email  "
-                            autoFocus
+                            name="email"
+                            onChange={props.handleChange}
+                            value={props.formValue.email}
                         />
                     </Form.Group>
 
@@ -52,7 +68,9 @@ function AccountInfo() {
                                             <Form.Control
                                                 type="password"
                                                 placeholder="Login Password  "
-                                                autoFocus
+                                                onChange={props.handleChange}
+                                                name="password"
+                                                value={props.formValue.password}
                                             />
                                         </Form.Group>
                 </Form>
