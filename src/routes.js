@@ -33,6 +33,9 @@ import HelpPage from "views/pages/help/HelpPage";
 import WelcomePage from "views/pages_client/welcome/WelcomePage";
 import CreateDeploymentPage from "views/pages_client/create_deployment/CreateDeploymentPage";
 import LoginPage from "views/pages_client/login/LoginPage";
+import MapTest from "views/Maptest";
+import PostPage from "views/pages/posts/PostPage";
+import MapLocationDetection from "views/pages/settings/general/MapLocationDetection";
 
 const dashboardRoutes = [
  
@@ -41,6 +44,20 @@ const dashboardRoutes = [
     name: "Map View",
     icon: "nc-icon nc-pin-3",
     component: MapPage,
+    layout: "/deployment"
+  },
+  {
+    path: "/post",
+    name: "Posts",
+    icon: "nc-icon nc-pin-3",
+    component: PostPage,
+    layout: "/deployment"
+  },
+  {
+    path: "/post/add",
+    name: "Add New Post",
+    icon: "nc-icon nc-pin-3",
+    component: PostPage,
     layout: "/deployment"
   },
   {
@@ -147,7 +164,14 @@ const dashboardRoutes = [
     icon: "nc-icon nc-bell-55",
     component: LoginPage,
     layout: "/pages"
-  }
+  },
+  // {
+  //   path: "/maptest",
+  //   name: "MapTest",
+  //   icon: "nc-icon nc-bell-55",
+  //   component: MapTest,
+  //   layout: "/deployment"
+  // }
 ];
 
 export default dashboardRoutes;

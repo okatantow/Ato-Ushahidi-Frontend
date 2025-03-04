@@ -4,6 +4,7 @@ function AddPostModal(props) {
     const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
     return (
+      <>
       <Modal
         {...props}
         size="lg"
@@ -59,6 +60,6 @@ function AddPostModal(props) {
           </Button>
         </Modal.Footer>
       </Modal>
-    );
+    </>);
   }
   export default AddPostModal;

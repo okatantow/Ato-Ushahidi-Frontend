@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; 
+import MapTest from "views/Maptest";
 
 function WelcomePage() {
   return (
@@ -82,6 +83,7 @@ function WelcomePage() {
       {/* <Footer /> */}
   
       </motion.div>
+      {/* <MapTest/> */}
     </>
   );
 }

@@ -23,11 +23,11 @@ import  axiosInstance  from "services/axios";
 import {login,logout, selectUser} from 'provider/features/userSlice';
 
 
-import GeneralSettingsPage from "./GeneralSettingsPage";
-import SurveysPage from "./SurveysPage";
-import CategoryPage from "./CategoryPage";
-import UsersPage from "./UsersPage";
-import RolesPage from "./RolesPage";
+import GeneralSettingsPage from "./general/GeneralSettingsPage";
+import SurveysPage from "./surveys/SurveysPage";
+import CategoryPage from "./categories/CategoryPage";
+import UsersPage from "./users/UsersPage";
+import RolesPage from "./roles/RolesPage";
 
 function SettingsPage() {
   const [pending, setPending] = useState(false);
@@ -55,6 +55,7 @@ useEffect(()=>{
 
 const getDeploymentData = async (deployment_id)=>{
   try {
+    setPending(true);
       const response = await axiosInstance.get('getDeploymentData/'+deployment_id,
         {
             headers: {
@@ -71,6 +72,7 @@ const getDeploymentData = async (deployment_id)=>{
     let dData = response?.data?.deployment_data;
     setDeploymentData(dData);
     // console.log(dData);
+    setPending(false);
 
    }
     } catch (err) {
@@ -116,7 +118,7 @@ const getDeploymentData = async (deployment_id)=>{
                   <h style={{ fontSize: "1.4em" }}>Surveys</h>
 
                 </div>
-                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Change your deployment name, description, logo and other details</p>
+                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Create and configure the surveys your deployment collects</p>
               </div>
               <div onClick={() => toggleCurrentPage('category')} className={`min-h-[110px] shadow-sm rounded-sm cursor-pointer border border-1  border-gray-500 py-3 px-2 hover:text-[#FF9500] hover:border-y-yellow-600  ${currentPage == 'category' ? 'text-[#FF9500]' : 'text-[#000]' }`} >
                 <div className="flex items-start gap-3">
@@ -125,7 +127,7 @@ const getDeploymentData = async (deployment_id)=>{
                   <h style={{ fontSize: "1.4em" }}>Category</h>
 
                 </div>
-                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Change your deployment name, description, logo and other details</p>
+                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Create categories that your post can be grouped under</p>
               </div>
               <div onClick={() => toggleCurrentPage('users')} className={`min-h-[110px] shadow-sm rounded-sm cursor-pointer border border-1  border-gray-500 py-3 px-2 hover:text-[#FF9500] hover:border-y-yellow-600  ${currentPage == 'users' ? 'text-[#FF9500]' : 'text-[#000]' }`} >
                 <div className="flex items-start gap-3">
@@ -134,7 +136,7 @@ const getDeploymentData = async (deployment_id)=>{
                   <h style={{ fontSize: "1.4em" }}>Users</h>
 
                 </div>
-                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Change your deployment name, description, logo and other details</p>
+                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Manage People contributing to your deployment</p>
               </div>
               <div onClick={() => toggleCurrentPage('roles')} className={`min-h-[110px] shadow-sm rounded-sm cursor-pointer border border-1  border-gray-500 py-3 px-2 hover:text-[#FF9500] hover:border-y-yellow-600  ${currentPage == 'roles' ? 'text-[#FF9500]' : 'text-[#000]' }`} >
                 <div className="flex items-start gap-3">
@@ -143,7 +145,7 @@ const getDeploymentData = async (deployment_id)=>{
                   <h style={{ fontSize: "1.4em" }}>Roles</h>
 
                 </div>
-                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Change your deployment name, description, logo and other details</p>
+                <p className="text-gray-500 mt-2 " style={{ fontSize: "13px" }}>Create and manage user permissions</p>
               </div>
 
             </Card>
@@ -151,13 +153,13 @@ const getDeploymentData = async (deployment_id)=>{
           </Col>
           <Col md="9">
             {currentPage == 'general' &&
-              <GeneralSettingsPage deploymentData={deploymentData?.deployment} SettingsData ={deploymentData?.settings}/>
+              <GeneralSettingsPage  organizationSizes ={deploymentData?.organization_sizes} deploymentCategories={deploymentData?.deployment_categories} />
             }
             {currentPage == "surveys" &&
-              <SurveysPage />
+              <SurveysPage surveys={deploymentData?.surveys}/>
             }
             {currentPage == "category" &&
-              <CategoryPage />
+              <CategoryPage categories={deploymentData?.categories}/>
             }
             {currentPage == "users" &&
               <UsersPage />

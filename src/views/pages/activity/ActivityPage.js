@@ -15,6 +15,7 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
+import LocationSelectMap from "../settings/general/LocationSelectMap";
 
 function ActivityPage() {
   return (
@@ -30,6 +31,8 @@ function ActivityPage() {
                       </p>
                     </Card.Header>
                     <Card.Body className="table-full-width table-responsive px-0">
+                      AM HERE
+                      <LocationSelectMap/>
                       
                     </Card.Body>
                   </Card>

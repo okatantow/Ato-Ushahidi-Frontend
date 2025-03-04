@@ -197,8 +197,8 @@ function Header({isLogin}) {
             <Nav.Item>
               <Nav.Link
                 className="m-0"
-                href="/deployment/map_view"
-                onClick={() => { localStorage.setItem('is_login', 'no'); navigate.push('/deployment/map_view');}}
+                // href="/deployment/map_view"
+                onClick={() => { localStorage.setItem('is_login', 'no');localStorage.removeItem('currentUser'); navigate.push('/deployment/map_view');}}
               >
                 <span className="no-icon">Log out</span>
               </Nav.Link>

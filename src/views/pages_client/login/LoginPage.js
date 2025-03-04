@@ -59,7 +59,7 @@ export default function LoginPage() {
               //   withCredentials: true
             }
         );
-        console.log(response)
+        // console.log(response)
         setPendingComplete(true);
         // setProgress(80)
         // console.log(JSON.stringify(response?.data));
@@ -81,6 +81,7 @@ export default function LoginPage() {
 
           // window.location.href="/";
         } catch (err) {
+          console.log(err);
           // console.log(err?.response);
           // console.log(err?.response.data);
           // console.log(err?.response.data['detail']);
@@ -96,8 +97,8 @@ export default function LoginPage() {
           dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:loginErrors}}))
         } else if (err.response?.status === 401) {
           console.log('Un authorized');
-          
-          dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:err?.response.data['detail']}}))
+          // alert(err.response.data['message']);
+          dispatch(toggleToaster({isOpen:true,toasterData:{type:"error",msg:err?.response.data['message']}}))
 
         } else {
           

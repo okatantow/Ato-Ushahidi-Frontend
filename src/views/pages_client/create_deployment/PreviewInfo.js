@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // react-bootstrap components
 import {
@@ -16,6 +16,28 @@ import {
 import { motion } from "framer-motion";
 
 function PreviewInfo(props) {
+  const [selectedCategory,setSelectedCategory] = useState();
+  const [selectedOrganizationSize,setSelectedOrganizationSize] = useState();
+
+ 
+  useEffect(()=>{
+    // alert(props.formValue.deployment_category+" - "+props.formValue.size_of_organization)
+    if(props.formValue.deployment_category){
+    let cat = props?.lookup?.categories;
+    let catid = props.formValue.deployment_category;
+    let found = cat.find(item=>item.id =catid);
+    setSelectedCategory(found.name)
+  }
+
+  if(props.formValue.size_of_organization){ 
+    let sizes = props?.lookup?.organization_sizes;
+    let sizeid = props.formValue.size_of_organization;
+    let foundsize = sizes.find(item=>item.id =sizeid);
+    setSelectedOrganizationSize(foundsize.size);
+  }
+   
+  },[])
+
     return (
         <>
             <motion.div
@@ -59,14 +81,14 @@ function PreviewInfo(props) {
                 <span>
                   <b>Size Of Organization : </b>
                   {/* <br /> */}
-                  <span className="ml-2">{props.formValue.size_of_organization}</span>
+                  <span className="ml-2">{selectedOrganizationSize}</span>
                 </span>
               </div>
               <div className="flex px-4 bg-gray-100  py-1 rounded-xl items-center justify-between italic mt-0 mb-2">
                 <span>
-                  <b>Catchment Area : </b>
+                  <b>Your are using Uverwatch for : </b>
                   {/* <br /> */}
-                  <span className="ml-2">{props.formValue.deployment_category}</span>
+                  <span className="ml-2">{selectedCategory}</span>
                 </span>
               </div>
               <hr/>

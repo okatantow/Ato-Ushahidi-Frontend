@@ -55,7 +55,7 @@ function DeploymentInfo(props) {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
-                        <Form.Label className="block items-start text-green-950" style={{ textAlign: "left" }}>eg: url.overwatch.com<span className="pl-2 text-sm text-[0.6em] text-gray-500">your deployment url</span></Form.Label>
+                        <Form.Label className="block items-start text-green-950" style={{ textAlign: "left" }}>eg: url.uverwatch.com<span className="pl-2 text-sm text-[0.6em] text-gray-500">your deployment url</span></Form.Label>
                     </Form.Group>
                     {/* <Form.Group
                         className="mb-3 grid grid-cols-1  items-start"

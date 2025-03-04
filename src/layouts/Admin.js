@@ -16,7 +16,7 @@
 
 */
 import React, { Component,useEffect,useState } from "react";
-import { useLocation, Route, Switch } from "react-router-dom";
+import { useLocation,useHistory, Route, Switch } from "react-router-dom";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Footer from "components/Footer/Footer";
@@ -37,6 +37,7 @@ function Admin() {
   const [hasImage, setHasImage] = React.useState(true);
   const location = useLocation();
   const mainPanel = React.useRef(null);
+  let navigate = useHistory();
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/deployment") {
@@ -125,6 +126,7 @@ function Admin() {
   const [userLogin, setUserLogin] = useState();
 
   useEffect(() => {
+    
     if (localStorage.getItem('currentUser')) {
       let uData = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
       setUser(uData);

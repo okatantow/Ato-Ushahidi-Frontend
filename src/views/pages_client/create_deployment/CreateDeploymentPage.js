@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState,useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
@@ -28,8 +28,33 @@ import PreviewInfo from "./PreviewInfo";
 function CreateDeploymentPage(props) {
     const [pending, setPending] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [lookup, setLookup] = useState();
     let navigate = useHistory();
     const dispatch = useDispatch();
+
+
+    const getDeploymentLookup=async()=>{
+        const results = await axiosInstance.get('getDeploymentLookup',
+        {
+            headers: {
+              'Content-Type': 'application/json',
+              "Authorization": `Bearer ${localStorage.getItem('access')}`
+          },
+        }
+  
+        );
+        
+    //    console.log(results?.data);
+         if(results?.data){
+          setLookup(results?.data?.deployment_data);
+  
+         }
+      }
+      useEffect(()=>{
+  
+          getDeploymentLookup();
+      }, []);
+
     const toggleCurrentPage = (type) => {
 
         if (type === 'add') {
@@ -270,15 +295,17 @@ function CreateDeploymentPage(props) {
                                                         <DeploymentInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
                                                     }
                                                     {parseInt(currentPage) == 2 &&
-                                                        <OrganizationInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
+                                                        <OrganizationInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} lookup={lookup}/>
                                                     }
                                                     {parseInt(currentPage) == 3 &&
                                                         <AccountInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
                                                     }
                                                     {parseInt(currentPage) == 4 &&
-                                                        <PreviewInfo formValue={formValue} />
+                                                        <PreviewInfo formValue={formValue} lookup={lookup}/>
                                                     }
-
+                                                    <div className="block">
+                                                    {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)}
+                                                    </div>
                                                     <div className='flex items-center justify-between mt-4'>
 
 
@@ -306,7 +333,7 @@ function CreateDeploymentPage(props) {
                                                         }
                                                         {parseInt(currentPage) == 4 &&
                                                             <>
-                                                                {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)}
+                                                               
 
                                                                 {pending ? <button className="btn bg-blue-500 text-black hover:bg-blue-700" disabled={true}><LoadingIcon /> processing..</button> : <>
                                                                     {/* <a onClick={handleSubmit} className="btn bg-blue-500 text-black hover:bg-blue-700">Submit </a>  */}

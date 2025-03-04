@@ -15,16 +15,17 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
+import React, { Component,useState,useEffect } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav, Button, Card } from "react-bootstrap";
 import Modal from 'react-bootstrap/Modal';
 import logo from "assets/img/reactlogo.png";
+// import AddPostModal from "../../views/pages/posts/AddPostModal";
 import AddPostModal from "views/pages/posts/AddPostModal";
 
 function Sidebar({ color, image, routes,deployment,user,isLogin }) {
-  const [modalShow, setModalShow] = React.useState(false);
+  const [modalShow, setModalShow] = useState(false);
   const location = useLocation();
   const activeRoute = (routeName) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -33,6 +34,16 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
   // console.log(deployment);
   // console.log('sidbared user');
   // console.log(user);
+    useEffect(() => {
+  let deployment = localStorage.getItem('deployment');
+    if (deployment && deployment !== undefined) {
+    //  alert('seting exit')
+    }else{
+      // alert('not seting exit')
+      window.location.replace('/pages/login');
+    }
+  }, [location]);
+
   return (<>
     <div className="sidebar" data-image={image} data-color={color}>
       <div
@@ -70,7 +81,7 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
 
           {/* </Card.Header> */}
           <li>
-            <Button
+            {/* <Button
 
               className="nav-link"
               activeClassName="active"
@@ -79,7 +90,16 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
             >
               <i className='nc-icon nc-simple-add' />
               <p>Add New Post</p>
-            </Button>
+            </Button> */}
+            <NavLink
+              to='post'
+              className="nav-link border" style={{border:'2px solid red'}}
+              activeClassName="active"
+              variant="warning"
+            >
+              <i className="nc-icon nc-simple-add" />
+              <p className="text-[#FF9500]">Add New Post</p>
+            </NavLink>
           </li>
           <hr style={{ backgroundColor: "#fff", color: "#fff" }} />
           
@@ -137,7 +157,9 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
             </NavLink>
            
           </li>
+          
           }
+          
           {/* {routes.map((prop, key) => {
             if (!prop.redirect)
               return (
@@ -203,10 +225,10 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
         </Nav>
       </div>
     </div>
-    <AddPostModal
+    {/* <AddPostModal
     show={modalShow}
     onHide={() => setModalShow(false)}
-  />
+  /> */}
   </>);
 }
 
