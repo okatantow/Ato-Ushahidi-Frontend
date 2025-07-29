@@ -36,6 +36,8 @@ import LoginPage from "views/pages_client/login/LoginPage";
 import MapTest from "views/Maptest";
 import PostPage from "views/pages/posts/PostPage";
 import MapLocationDetection from "views/pages/settings/general/MapLocationDetection";
+import EntityPage from "views/pages/entities/EntityPage";
+import DetailedSingleData from "views/pages/data_view/options/DetailedSingleData";
 
 const dashboardRoutes = [
  
@@ -68,6 +70,20 @@ const dashboardRoutes = [
     layout: "/deployment"
   },
   {
+    path: "/entity",
+    name: "Entities",
+    icon: "nc-icon nc-pin-3",
+    component: EntityPage,
+    layout: "/deployment"
+  },
+  {
+    path: "/entity/add",
+    name: "Add New Entity",
+    icon: "nc-icon nc-pin-3",
+    component: EntityPage,
+    layout: "/deployment"
+  },
+  {
     path: "/activity",
     name: "Activity",
     icon: "nc-icon nc-bullet-list-67",
@@ -89,12 +105,19 @@ const dashboardRoutes = [
     layout: "/deployment"
   },
   {
-    path: "/help",
-    name: "Help And Support",
+    path: "/detailed",
+    name: "Single",
     icon: "nc-icon nc-circle-09",
-    component: HelpPage,
+    component: DetailedSingleData,
     layout: "/deployment"
   },
+  // {
+  //   path: "/help",
+  //   name: "Help And Support",
+  //   icon: "nc-icon nc-circle-09",
+  //   component: HelpPage,
+  //   layout: "/deployment"
+  // },
   {
     path: "/user",
     name: "User Profile",

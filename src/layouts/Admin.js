@@ -135,7 +135,24 @@ function Admin() {
       let dData = JSON.parse(localStorage.getItem('deployment') ?? '{}');
       setDeployment(dData);
     }
+
+    
+    
   }, []);
+
+  useEffect(() => {
+    let deployment = localStorage.getItem('settings');
+    if (deployment && deployment !== undefined) {
+      let depType = JSON.parse(deployment).deployment_type;
+      let isSignIn = localStorage.getItem('is_login')
+      if(depType == "private" && (isSignIn =="no" || isSignIn == undefined)){
+        window.location.replace('/pages/login');
+      }
+    }else{
+      window.location.replace('/pages/login');
+    }
+    
+  }, [location]);
 
   return (
     <>
@@ -152,7 +169,7 @@ function Admin() {
         <Sidebar user={user} deployment={deployment} isLogin={userLogin} color={color} image={hasImage ? image : ""} routes={routes} />
         <div className="main-panel" ref={mainPanel}>
           <AdminNavbar user={user} isLogin={userLogin}/>
-          <div className="content">
+          <div className="content" style={{padding:0}}>
             <Switch>{getRoutes(routes)}</Switch>
           </div>
           <Footer />

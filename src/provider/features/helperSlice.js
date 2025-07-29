@@ -5,6 +5,7 @@ const initialState = {
   toasterOn: false,
   toasterData:{type:"",msg:""},
   loginChange:1,
+  selectedSingleData:'',
 
 };
 
@@ -25,12 +26,15 @@ export const helperSlice = createSlice({
     toggleLoginChange:(state, action) => {
       state.loginChange = state.loginChange + action.payload;
     },
+    setSelectedSingleData:(state, action) => {
+      state.selectedSingleData = action.payload;
+    },
 
   },
 
 });
 
-export const { toggleLoadingBar,toggleToaster,toggleLoginChange } = helperSlice.actions;
+export const { toggleLoadingBar,toggleToaster,toggleLoginChange,setSelectedSingleData } = helperSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -39,6 +43,7 @@ export const selectLoadingBar = (state) => state.helper.loadingBarOn;
 export const selectToasterStatus = (state) => state.helper.toasterOn;
 export const selectToasterData = (state) => state.helper.toasterData;
 export const selectLoginChange = (state) => state.helper.loginChange;
+export const selectedSingleData = (state) => state.helper.selectedSingleData;
 
 
 export default helperSlice.reducer;

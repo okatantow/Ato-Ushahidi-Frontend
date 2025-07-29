@@ -21,25 +21,29 @@ import { useLocation, NavLink } from "react-router-dom";
 import { Nav, Button, Card } from "react-bootstrap";
 import Modal from 'react-bootstrap/Modal';
 import logo from "assets/img/reactlogo.png";
-// import AddPostModal from "../../views/pages/posts/AddPostModal";
+import { useSelector,useDispatch } from "react-redux";
 import AddPostModal from "views/pages/posts/AddPostModal";
+import CollectionPage from "views/pages/collection/CollectionPage";
+import HelpPage from "views/pages/help/HelpPage";
+
 
 function Sidebar({ color, image, routes,deployment,user,isLogin }) {
   const [modalShow, setModalShow] = useState(false);
+  const [show, setShow] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const location = useLocation();
+  const collectionOn =  useSelector((state)=>state.collection.collectionOn);
+  const collectionId =  useSelector((state)=>state.collection.collectionId);
   const activeRoute = (routeName) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
-  // console.log('sidbared deployment');
-  // console.log(deployment);
-  // console.log('sidbared user');
-  // console.log(user);
+
     useEffect(() => {
   let deployment = localStorage.getItem('deployment');
     if (deployment && deployment !== undefined) {
-    //  alert('seting exit')
+    
     }else{
-      // alert('not seting exit')
+     
       window.location.replace('/pages/login');
     }
   }, [location]);
@@ -52,7 +56,7 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
           backgroundImage: "url(" + image + ")"
         }}
       />
-      <div className="sidebar-wrapper">
+      <div className="sidebar-wrapper scrollbar scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400">
         <div className="logo d-flex align-items-center justify-content-start">
           <a
             href="/pages/welcome"
@@ -109,7 +113,7 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
             activeRoute('deployment/map_view')
           }>
             <NavLink
-              to='map_view'
+              to={collectionOn ? 'map_view?collection='+collectionId : 'map_view'}
               className="nav-link"
               activeClassName="active"
             >
@@ -121,7 +125,7 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
             activeRoute('deployment/data_view')
           }>
             <NavLink
-              to='data_view'
+              to={collectionOn ? 'data_view?collection='+collectionId : 'data_view'}
               className="nav-link"
               activeClassName="active"
             >
@@ -187,26 +191,41 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
           <li className={
             activeRoute('deployment/collections')
           }>
-            <NavLink
-              to='collections'
-              className="nav-link"
+            <a
+              // to='collections'
+              className="nav-link cursor-pointer"
               activeClassName="active"
+              onClick={() => {setShow(true);}}
             >
               <i className="nc-icon nc-grid-45" />
               <p>Collections</p>
+            </a>
+          </li>
+          <li>
+          
+            <NavLink
+              to='entity'
+              className="nav-link " 
+              // style={{border:'1px solid #7dd973'}}
+              activeClassName="active"
+              variant="info"
+            >
+              <i className="nc-icon nc-support-17" />
+              <p className="">New Entity</p>
             </NavLink>
           </li>
           <li className={
             activeRoute('deployment/help')
           }>
-            <NavLink
-              to='help'
-              className="nav-link"
+            <a
+              // to='help'
+              className="nav-link cursor-pointer"
               activeClassName="active"
+              onClick={() => {setShowHelp(true);}}
             >
               <i className="nc-icon nc-caps-small" />
               <p>Help</p>
-            </NavLink>
+            </a>
           </li>
           {isLogin == 'yes' && 
           <li className={
@@ -225,6 +244,10 @@ function Sidebar({ color, image, routes,deployment,user,isLogin }) {
         </Nav>
       </div>
     </div>
+    <CollectionPage show={show} setShow={setShow}/>
+    <HelpPage showHelp={showHelp} setShowHelp={setShowHelp}/>
+
+    
     {/* <AddPostModal
     show={modalShow}
     onHide={() => setModalShow(false)}

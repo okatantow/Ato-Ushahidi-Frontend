@@ -136,12 +136,13 @@ export default function LoginPage() {
      if(response?.data){
       
       localStorage.setItem('deployment',JSON.stringify(response?.data?.deployment))
+      localStorage.setItem('settings',JSON.stringify(response?.data?.settings))
      localStorage.setItem('is_login', 'yes');
      
 
     let uData = response?.data?.deployment;
      dispatch(login(uData));
-    navigate.push('/deployment/settings');
+    navigate.push('/deployment/map_view');
      }
 
         // window.location.href="/";

@@ -25,6 +25,7 @@ import UserAdd from "./UserAdd";
 function UsersPage() {
 const [users, setUser] = useState([]);
 const [roles, setRole] = useState([]);
+const [accessLevels, setAccessLevel] = useState([]);
   const dispatch = useDispatch();
   const [currentPage,setCurrentPage] = useState('list');
   const [formType,setFormType] = useState('add');
@@ -92,8 +93,10 @@ const [roles, setRole] = useState([]);
      if(response?.data){
       let dData = response?.data?.users;
       let drole = response?.data?.roles;
+      let aLevel = response?.data?.access_levels;
       setUser(dData);
       setRole(drole);
+      setAccessLevel(aLevel);
       // console.log(dData);
   
      }
@@ -123,7 +126,7 @@ const [roles, setRole] = useState([]);
      <UserList deploymentId={deploymentId} toggleFormType={toggleFormType} pending={pending} setPending={setPending} users={users} roles={roles}  currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     }
     {currentPage == 'add' &&
-     <UserAdd deploymentId={deploymentId} toggleFormType={toggleFormType} record={selectedRecord} pending={pending} setPending={setPending} formType={formType} setFormType={setFormType} roles={roles} users={users} currentPage={currentPage} setCurrentPage={setCurrentPage} populateList={populateList} updateListRecord={updateListRecord} updateListRecordDelete={updateListRecordDelete}/>
+     <UserAdd deploymentId={deploymentId} toggleFormType={toggleFormType} record={selectedRecord} pending={pending} setPending={setPending} formType={formType} setFormType={setFormType} roles={roles} users={users} accessLevels={accessLevels} currentPage={currentPage} setCurrentPage={setCurrentPage} populateList={populateList} updateListRecord={updateListRecord} updateListRecordDelete={updateListRecordDelete}/>
     }
    
     </>

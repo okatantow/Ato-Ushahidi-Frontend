@@ -23,6 +23,7 @@ function UserAdd(props) {
   const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
   const [pending, setPending] = useState(false);
+  const [initialPassword, setInitialPassword] = useState("");
   const [formValue, setFormValue] = useState(
     {
       id: '',
@@ -32,16 +33,14 @@ function UserAdd(props) {
       password: '',
       password_changed: 'false',
       deployment_role: '',
+      access_level: '',
     }
   );
 
   useEffect(() => {
     if (props.record && props.formType == "update") {
       setFormValue(props.record);
-    //   setFormValue({
-    //     ...formValue,
-    //     password:''
-    //  });
+     setInitialPassword(props.record.password);
 
     } else {
       setFormValue({
@@ -52,8 +51,13 @@ function UserAdd(props) {
         password: '',
         password_changed: 'false',
         deployment_role: '',
+        access_level: '',
       })
     }
+  //   setFormValue({
+  //     ...formValue,
+  //     password:''
+  //  });
   }, [props.record, props.formType]);
 
   const handleChange = (event) => {
@@ -79,6 +83,7 @@ function UserAdd(props) {
         password: '',
         password_changed: 'false',
         deployment_role: '',
+        access_level: '',
       })
 
     } else {
@@ -106,7 +111,7 @@ function UserAdd(props) {
 
   const [invalidFields, setInvalidFields] = useState('');
   function validateformData(formData, setInvalidFields) {
-    alert(formData.password);
+    // alert(formData.password+" "+initialPassword);
     const invalidFields = []; // Array to store invalid field messages
 
     // Check for empty required fields
@@ -120,18 +125,38 @@ function UserAdd(props) {
     if (!formData.deployment_role) {
       invalidFields.push('Role');
     }
+    if (!formData.access_level) {
+      invalidFields.push('Access Level');
+    }
     if (props.formType == "add" && !formData.password) {
       invalidFields.push('Password');
     }
-    if (props.formType == "update" && formValue.password != "") {
-      alert('chhh')
-    //   formValue.password_changed = 'true';
-    //   setFormValue({
-    //     ...formValue,
-    //     password_changed:'true'
-    //  });
+    
+    if (props.formType == "update") {
+      // if(!formValue.password){
+       
+        // invalidFields.push('Password');
+      //   setFormValue({
+      //     ...formValue,
+      //     password_changed:'false'
+      //  });
+       
+      // }else{
+       if(formValue.password !== initialPassword){
+        setFormValue({
+          ...formValue,
+          password_changed:'true'
+       });
+       }else{
+        setFormValue({
+          ...formValue,
+          password_changed:'f'
+       });
+       }
+      
+      // }
+     
     }
-   
     
 
 
@@ -262,7 +287,7 @@ function UserAdd(props) {
             className="nav-bar"
           >
 
-            <div className="md:min-h-[450px] relative">
+            <div className="md:min-h-[550px] relative">
 
               <div>
                 <div className="mb-6">
@@ -282,19 +307,27 @@ function UserAdd(props) {
                     If you leave the field blank your password will not change
                   </p>
                 </div>
-
+                <div className="grid gap-6 md:grid-cols-2 pt-4">
                 <div className="mb-6">
                   <label for="deployment_role" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
                   <select id="deployment_role" onChange={handleChange} name="deployment_role" value={formValue.deployment_role} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option selected>Choose a Role</option>
-                    {/* <option value="US">United States</option>
-    <option value="CA">Canada</option>
-    <option value="FR">France</option>
-    <option value="DE">Germany</option> */}
+                  
                     {props?.roles?.map((record, index) => (
                       <option key={index} value={record?.id}>{record?.name}</option>
                     ))}
                   </select>
+                </div>
+                <div className="mb-6">
+                  <label for="access_level" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Level</label>
+                  <select id="access_level" onChange={handleChange} name="access_level" value={formValue.access_level} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option selected>Choose an Access Level</option>
+                  
+                    {props?.accessLevels?.map((record, index) => (
+                      <option key={index} value={record?.level}>Level {record?.level} - ({record?.name})</option>
+                    ))}
+                  </select>
+                </div>
                 </div>
                 <div>
                   {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)}

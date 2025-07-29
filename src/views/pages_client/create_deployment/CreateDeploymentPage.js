@@ -27,6 +27,7 @@ import PreviewInfo from "./PreviewInfo";
 
 function CreateDeploymentPage(props) {
     const [pending, setPending] = useState(false);
+    const [isPasswordValidated, setPasswordValidated] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [lookup, setLookup] = useState();
     let navigate = useHistory();
@@ -298,7 +299,7 @@ function CreateDeploymentPage(props) {
                                                         <OrganizationInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} lookup={lookup}/>
                                                     }
                                                     {parseInt(currentPage) == 3 &&
-                                                        <AccountInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} />
+                                                        <AccountInfo formValue={formValue} setFormValue={setFormValue} handleChange={handleChange} isPasswordValidated={isPasswordValidated} setPasswordValidated={setPasswordValidated} />
                                                     }
                                                     {parseInt(currentPage) == 4 &&
                                                         <PreviewInfo formValue={formValue} lookup={lookup}/>
@@ -322,15 +323,28 @@ function CreateDeploymentPage(props) {
                                                         {parseInt(currentPage) == 1 &&
                                                             <a></a>
                                                         }
-                                                        {parseInt(currentPage) < 4 &&
+                                                        {parseInt(currentPage) < 4 && <> 
+
+                                                        {(parseInt(currentPage) == 3 && isPasswordValidated) ? 
                                                             <a onClick={() => toggleCurrentPage('add')}
                                                                 className="bg-white btn text-black active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
                                                                 type="button" variant="warning"
                                                             >
                                                                 Next  <i className="fas fa-arrow-alt-circle-right"></i>
                                                             </a>
+                                                            :""}
 
-                                                        }
+                                                        
+                                                        {parseInt(currentPage) !== 3 && (
+                                                            <a onClick={() => toggleCurrentPage('add')}
+                                                                className="bg-white btn text-black active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
+                                                                type="button" variant="warning"
+                                                            >
+                                                                Next  <i className="fas fa-arrow-alt-circle-right"></i>
+                                                            </a>)
+                                                            }
+
+                                                        </>}
                                                         {parseInt(currentPage) == 4 &&
                                                             <>
                                                                

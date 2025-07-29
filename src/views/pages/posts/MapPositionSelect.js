@@ -60,24 +60,39 @@ export default function MapPositionSelect(props) {
             mapRef.current.removeLayer(userMarkerRef.current);
         }
 
-        // Add new marker with proper icon and anchor points
-        userMarkerRef.current = leaflet
-            .marker([location.latitude, location.longitude], { icon: myIcon, draggable: true })
-            .addTo(mapRef.current)
-            .bindPopup("User Position");
 
+        // Notify parent component of location change
+        if (props?.latitude && props?.latitude !== null) {
+            // Add new marker with proper icon and anchor points
+            userMarkerRef.current = leaflet
+                .marker([props?.latitude, props?.longitude], { icon: myIcon, draggable: true })
+                .addTo(mapRef.current)
+                .bindPopup("User Position");
+
+
+
+            // Update map view to the new location
+            mapRef.current.flyTo([props?.latitude, props?.longitude]);
+
+        } else {
+            // Add new marker with proper icon and anchor points
+            userMarkerRef.current = leaflet
+                .marker([location.latitude, location.longitude], { icon: myIcon, draggable: true })
+                .addTo(mapRef.current)
+                .bindPopup("User Position");
+
+
+            // Update map view to the new location
+            mapRef.current.flyTo([location.latitude, location.longitude]);
+
+
+            props?.onLocationChange(location.latitude, location.longitude);
+        }
         // Style the marker
         const el = userMarkerRef.current.getElement();
         if (el) {
             el.style.filter = "hue-rotate(120deg)";
         }
-
-        // Update map view to the new location
-        mapRef.current.flyTo([location.latitude, location.longitude]);
-
-        // Notify parent component of location change
-        props?.onLocationChange(location.latitude, location.longitude);
-
         // Handle marker dragging
         userMarkerRef.current.on("drag", (e) => {
             const { lat: latitude, lng: longitude } = e.latlng;

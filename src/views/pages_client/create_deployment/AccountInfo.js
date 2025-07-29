@@ -14,8 +14,34 @@ import {
     Form
 } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { useState,useEffect } from "react";
 
 function AccountInfo(props) {
+
+      const [passwordValidations, setPasswordValidations] = useState({
+        length: false,
+        upperLower: false,
+        number: false,
+        specialChar: false
+      });
+    
+      const validatePassword = (pass) => {
+        const newValidations = {
+          length: pass.length >= 8 && pass.length <= 15,
+          upperLower: /(?=.*[a-z])(?=.*[A-Z])/.test(pass),
+          number: /\d/.test(pass),
+          specialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)
+        };
+        setPasswordValidations(newValidations);
+        return Object.values(newValidations).every(v => v);
+      };
+    
+      // Update password validation status when password changes
+      useEffect(() => {
+        const isValid = validatePassword(props.formValue.password || '');
+        props.setPasswordValidated(isValid);
+      }, [props.formValue.password]);
+    
     return (
         <>
             <motion.div
@@ -63,16 +89,35 @@ function AccountInfo(props) {
                         />
                     </Form.Group>
 
-                     <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
-                                            <Form.Label className="block items-start text-blue-900" style={{ textAlign: "left" }}>Password<span className="pl-2 text-sm text-[0.6em] text-gray-500">You will use this password to login</span></Form.Label>
-                                            <Form.Control
-                                                type="password"
-                                                placeholder="Login Password  "
-                                                onChange={props.handleChange}
-                                                name="password"
-                                                value={props.formValue.password}
-                                            />
-                                        </Form.Group>
+                   
+                                        <Form.Group className="mb-3 grid grid-cols-1  items-start justify-start" >
+            <Form.Label className="block items-start text-blue-900" style={{ textAlign: "left" }}>Password<span className="pl-2 text-sm text-[0.6em] text-gray-500">You will use this password to login</span></Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Login Password  "
+              onChange={props.handleChange}
+              name="password"
+              value={props.formValue.password}
+            />
+            <div className="mt-2 text-sm grid grid-cols-2">
+              <div className={`flex items-center ${passwordValidations.length ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="mr-1">{passwordValidations.length ? '✓' : '✗'}</span>
+                8-15 characters
+              </div>
+              <div className={`flex items-center ${passwordValidations.upperLower ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="mr-1">{passwordValidations.upperLower ? '✓' : '✗'}</span>
+                Upper & lowercase letters
+              </div>
+              <div className={`flex items-center ${passwordValidations.number ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="mr-1">{passwordValidations.number ? '✓' : '✗'}</span>
+                At least one number
+              </div>
+              <div className={`flex items-center ${passwordValidations.specialChar ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="mr-1">{passwordValidations.specialChar ? '✓' : '✗'}</span>
+                At least one special character
+              </div>
+            </div>
+          </Form.Group>
                 </Form>
             </motion.div>
         </>

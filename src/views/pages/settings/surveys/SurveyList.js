@@ -37,9 +37,14 @@ function SurveyList(props) {
           </Card.Title>
         </Card.Header>
         <Card.Body >
+       
           <hr />
           <div className="md:min-h-[300px]">
-
+          { (!props.pending  && props?.surveys?.length < 1) &&
+    <div className="md:flex items-center justify-center ">
+        <div className="bg-white p-5 font-semibold text-[1.5em]">No Results Found</div>
+        </div>
+}
 
 
             {props?.pending && (<div className="flex items-center justify-center mb-4">

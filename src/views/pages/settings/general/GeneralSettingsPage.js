@@ -43,9 +43,13 @@ function GeneralSettingsPage(props) {
       display_name: '',
       deployment_category: '',
       description: '',
+      
       logo: '',
       enable_user_signup: '',
       deployment_type: '',
+      access_level: '',
+      priority_level: '',
+      impact_level: '',
 
     }
   );
@@ -57,8 +61,8 @@ function GeneralSettingsPage(props) {
       about: deployment.about,
       name: deployment.name,
       email: deployment.email,
-      latitude: deployment.latitude,
-      longitude: deployment.longitude,
+      latitude: settings.latitude,
+      longitude: settings.longitude,
       size_of_organization: deployment.size_of_organization,
       organization_name: deployment.organization_name,
       display_name: deployment.display_name,
@@ -67,6 +71,9 @@ function GeneralSettingsPage(props) {
       logo: settings.logo,
       enable_user_signup: settings.enable_user_signup,
       deployment_type: settings.deployment_type,
+      access_level: settings.access_level,
+      priority_level: settings.priority_level,
+      impact_level: settings.impact_level,
 
     });
 
@@ -221,7 +228,9 @@ function GeneralSettingsPage(props) {
       setPending(false);
       // props.updateListRecord(results?.data?.data);
       setFormData(results?.data?.data?.deployment, results?.data?.data?.settings);
-
+     
+      localStorage.setItem('deployment',JSON.stringify(results?.data.data.deployment))
+      localStorage.setItem('settings',JSON.stringify(results?.data.data.settings))
     }
   }
 
@@ -309,6 +318,7 @@ function GeneralSettingsPage(props) {
                 </Form.Group>
               </Col>
             </Row>
+            
             {/* <br/> */}
             <Row className="mt-3">
               <Col className="pr-1" md="6">
@@ -427,7 +437,51 @@ function GeneralSettingsPage(props) {
                 </p>
               </Col>
             </Row>
-           
+            <Row className="mt-3">
+              <Col className="pr-1" md="4">
+                <Form.Group>
+                  <label>Access Level  [1-3,1-5,1-10]</label>
+                  <Form.Control
+
+                    placeholder="access level"
+                    type="number"
+                    value={formValue?.access_level}
+                    name="access_level"
+                    onChange={handleChange}
+                  ></Form.Control>
+                </Form.Group>
+              </Col>
+
+              <Col className="pl-1" md="4">
+                <Form.Group>
+                  <label htmlFor="priority_level">
+                    Priority Level  [1-3,1-5,1-10]
+                  </label>
+                  <Form.Control
+                    placeholder="Priority Level"
+                    type="number"
+                    name="priority_level"
+                    value={formValue?.priority_level}
+                    onChange={handleChange}
+                  ></Form.Control>
+                </Form.Group>
+              </Col>
+              <Col className="pl-1" md="4">
+                <Form.Group>
+                  <label htmlFor="impact_level">
+                    Impact Level [1-3,1-5,1-10]
+                  </label>
+                  <Form.Control
+                    placeholder="Impact Level"
+                    type="number"
+                   name="impact_level"
+                    value={formValue?.impact_level}
+                    onChange={handleChange}
+                  ></Form.Control>
+                </Form.Group>
+              </Col>
+
+            </Row>
             <hr />
             <Row>
               <Col className="pr-1" md="12">
@@ -444,9 +498,9 @@ function GeneralSettingsPage(props) {
             </Row>
             <Row>
               <Col className="pr-1" md="12">
-                <div className="min-h-[250px] text-center bg-blue-100 border border-1 mr-2">
+                <div className="min-h-[300px] text-center bg-blue-100 border border-1 mr-2">
 
-                  <MapPositionSelect mapHeight={'250px'} onLocationChange={handleLocationChange} />
+                  <MapPositionSelect mapHeight={'300px'} onLocationChange={handleLocationChange} latitude={formValue?.latitude} longitude={formValue?.longitude}/>
                 </div>
               </Col>
             </Row>
@@ -505,8 +559,10 @@ function GeneralSettingsPage(props) {
                   type="submit"
                   variant="info"
                   onClick={handleUpdate}
+                  disabled={pending}
                 >
-                  Save Changes
+                  
+                  {pending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
 

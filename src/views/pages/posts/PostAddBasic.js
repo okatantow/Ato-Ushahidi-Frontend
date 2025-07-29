@@ -23,12 +23,18 @@ import Spinner from 'react-bootstrap/Spinner';
 import MapTest from "views/Maptest";
 import LocationSelectMap from "../settings/general/LocationSelectMap";
 import MapPositionSelect from "./MapPositionSelect";
+import { IconPicker } from "others/icons/IconPicker";
 
 function PostAddBasic(props) {
     const [surveys, setPosts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [accessLevel, setAccessLevel] = useState([]);
+    const [impactLevel, setImpactLevel] = useState([]);
+    const [priorityLevel, setPriorityLevel] = useState([]);
+    const [statuses, setStatus] = useState([]);
     const dispatch = useDispatch();
     const [pending, setPending] = useState(false);
+    const [setupComplete, setSetupComplete] = useState(false);
     let navigate = useHistory();
     const [deploymentId, setDeploymentId] = useState(null);
     const [formValue, setFormValue] = useState(
@@ -39,31 +45,58 @@ function PostAddBasic(props) {
             description: '',
             latitude: '',
             longitude: '',
+            icon: "",
+            color: "",
+            tags: "",
+            assessment: "",
+            access_level: "",
+            impact_level: "",
+            priority_level: "",
+            post_status: "",
             deployment_survey: props?.record.id,
-            deployment_category: '',
-            user_type: '',
+            deployment_sub_category: '',
+            user_type: props?.userId == null ? 'anonymous' : 'member',
             deployment_user: props?.userId,
         }
     );
 
     useEffect(() => {
-        // if (props.record && props.formType == "update") {
-        //     setFormValue(props.record);
 
-        // } else {
-        setFormValue({
-            id: '',
-            deployment: props?.deploymentId,
-            title: '',
-            latitude: '',
-            longitude: '',
-            deployment_survey: props?.record.id,
-            deployment_category: '',
-            user_type: props?.userId == null ? 'anonymous' : 'member',
-            deployment_user: props?.userId,
-        })
-        // }
+        if (props.record && props.formType == "update") {
+            setFormValue(props.record);
+
+        } else {
+            setFormValue({
+                id: '',
+                deployment: props?.deploymentId,
+                title: '',
+                latitude: '',
+                longitude: '',
+                icon: "",
+                color: "",
+                tags: "",
+                assessment: "",
+                access_level: "",
+                impact_level: "",
+                priority_level: "",
+                post_status: "",
+                deployment_survey: props?.record.id,
+                deployment_sub_category: '',
+                user_type: props?.userId == null ? 'anonymous' : 'member',
+                deployment_user: props?.userId,
+            })
+        }
     }, [props.record, props.formType]);
+
+    const handleIconSelection = ({ iconClass, color }) => {
+
+        setFormValue({
+            ...formValue,
+            icon: iconClass,
+            color: color,
+        });
+        console.log(formValue)
+    };
 
     const handleChange = (event) => {
         setFormValue({
@@ -87,18 +120,9 @@ function PostAddBasic(props) {
             deployment: props?.deploymentId,
         });
         if (validateformData(formValue, setInvalidFields)) {
-            // alert('form valid')
 
             addRecordInstance(formValue);
-            // setFormValue({
-            //     title: '',
-            //     deployment: props?.deploymentId,
-            //     description: '',
-            //     latitude: '',
-            //     longitude: '',
-            //     deployment_survey: props?.record.id,
-            //     deployment_category: '',
-            // })
+
 
         } else {
             setTimeout(() => {
@@ -139,12 +163,15 @@ function PostAddBasic(props) {
         if (!formData.longitude) {
             invalidFields.push('Longitude');
         }
- 
-        if(categories.length > 0){
-            if (!formData.deployment_category) {
+        if (!formData.tags) {
+            invalidFields.push('Tags');
+        }
+
+        if (categories.length > 0) {
+            if (!formData.deployment_sub_category) {
                 invalidFields.push('Category');
             }
-    
+
         }
 
         if (invalidFields.length > 0) {
@@ -183,7 +210,7 @@ function PostAddBasic(props) {
     const updateRecordInstance = async (data) => {
 
         setPending(true);
-        const results = await axiosInstance.post('updateDeploymentPost',
+        const results = await axiosInstance.post('updatePostBasic',
             JSON.stringify(data),
             {
                 headers: {
@@ -198,7 +225,9 @@ function PostAddBasic(props) {
             dispatch(toggleToaster({ isOpen: true, toasterData: { type: "success", msg: "Post Updated Successfully" } }))
 
             setPending(false);
-            props.updateListRecord(results?.data?.data);
+            props.setShow(false)
+            window.location.replace('/deployment/data_view');
+            // props.updateListRecord(results?.data?.data);
 
         }
     }
@@ -251,24 +280,24 @@ function PostAddBasic(props) {
 
     useEffect(() => {
         let deployment = localStorage.getItem('deployment');
-        
-    if (deployment && deployment !== undefined) {
-    
-    }else{
-     
-      window.location.replace('/pages/login');
-    }
+
         if (deployment && deployment !== undefined) {
-            getCategoryData(JSON.parse(deployment).id);
+
+        } else {
+
+            window.location.replace('/pages/login');
+        }
+        if (deployment && deployment !== undefined) {
+            getLookupData(JSON.parse(deployment).id);
             setDeploymentId(JSON.parse(deployment).id);
         }
 
     }, []);
 
-    const getCategoryData = async (deployment_id) => {
+    const getLookupData = async (deployment_id) => {
         setPending(true);
         try {
-            const response = await axiosInstance.get('getDeploymentSubCategories/' + deployment_id,
+            const response = await axiosInstance.get('getPostLookups/' + deployment_id,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -280,9 +309,19 @@ function PostAddBasic(props) {
 
             setPending(false);
             if (response?.data) {
-                let dData = response?.data?.categories;
-                setCategories(dData);
+                let dData = response?.data?.post_lookups;
+                setCategories(dData?.categories);
+                setImpactLevel(dData?.impact_levels);
+                setAccessLevel(dData?.access_levels);
+                setPriorityLevel(dData?.priority_levels);
+                setStatus(dData?.statuses);
                 // console.log(dData);
+                if ((dData?.categories?.length == 0) || (dData?.priority_levels?.length == 0) || (dData?.access_levels?.length == 0) || (dData?.impact_levels?.length == 0) || (dData?.statuses?.length == 0)) {
+                    // alert('not completed')
+                    setSetupComplete(false)
+                } else {
+                    setSetupComplete(true);
+                }
 
             }
         } catch (err) {
@@ -299,7 +338,8 @@ function PostAddBasic(props) {
         <>
             <div className="min-h-lvh flex items-start justify-center">
 
-                <div className="md:min-w-[80%] md:min-h-[80%] ">
+                <div className={props?.formType == 'add' ? 'md:min-w-[80%] md:min-h-[80%]' : 'md:min-w-[100%]'}>
+
                     <Card>
                         <Card.Header>
                             <Card.Title as="h4">
@@ -312,6 +352,7 @@ function PostAddBasic(props) {
                             </Card.Title>
                         </Card.Header>
                         <Card.Body >
+
                             <hr />
                             {pending && (<div className="flex items-center justify-center mb-4">
                                 <Spinner animation="grow" variant="warning" />
@@ -332,7 +373,7 @@ function PostAddBasic(props) {
                                             <Col className="pr-1" md="12">
                                                 <div className="min-h-[250px] text-center bg-blue-100 border border-1 mr-2">
 
-                                                    <MapPositionSelect mapHeight={'250px'} onLocationChange={handleLocationChange} />
+                                                    <MapPositionSelect mapHeight={'250px'} onLocationChange={handleLocationChange} latitude={formValue?.latitude} longitude={formValue?.longitude} />
                                                 </div>
                                             </Col>
                                         </Row>
@@ -346,9 +387,23 @@ function PostAddBasic(props) {
                                                 <input type="text" id="longitude" name="longitude" onChange={handleChange} disabled value={formValue.longitude} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:bg-white block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required />
                                             </div>
                                         </div>
-                                        <div className="mb-6">
-                                            <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-                                            <input type="text" onChange={handleChange} name="title" value={formValue.title} id="title" className=" focus:bg-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Title of post" required />
+                                        <div className="grid gap-6  md:grid-cols-2 ">
+                                            <div className="mb-6">
+                                                <label
+                                                    htmlFor="survey_description"
+                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                >
+                                                    Pick An Icon And Color
+                                                </label>
+                                                <IconPicker onSelection={handleIconSelection}
+                                                    initialIconClass={formValue.icon}
+                                                    initialColor={formValue.color}
+                                                />
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                                                <input type="text" onChange={handleChange} name="title" value={formValue.title} id="title" className=" focus:bg-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Title of post" required />
+                                            </div>
                                         </div>
 
                                         <div className="mb-6">
@@ -356,31 +411,120 @@ function PostAddBasic(props) {
                                             <textarea id="description" onChange={handleChange} name="description" value={formValue.description} rows="3" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300  dark:bg-gray-700 dark:border-gray-300 dark:placeholder-gray-400 dark:text-white  focus:bg-white" placeholder="Post Description..."></textarea>
 
                                         </div>
-                                        <div className="mb-6">
-                                            <label htmlFor="deployment_category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                                        <div className="grid gap-6 md:grid-cols-2 ">
+                                            <div className="mb-6">
+                                                <label htmlFor="deployment_sub_category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
 
-                                            <select  style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " required onChange={handleChange}  name="deployment_category">
-                                                <option>Select Category</option>
-                                                {categories?.map((record, index) => (
-                                                    <option key={index} value={record?.id}>{record?.name}</option>
-                                                ))}
+                                                <select style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " value={formValue.deployment_sub_category} required onChange={handleChange} name="deployment_sub_category">
+                                                    <option>Select Category</option>
+                                                    {categories?.map((record, index) => (
+                                                        <option key={index} value={record?.id}>{record?.name}</option>
+                                                    ))}
 
-                                            </select>
+                                                </select>
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    Tags (comma seperated tags)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    onChange={handleChange}
+                                                    name="tags"
+                                                    value={formValue.tags}
+                                                    id="title"
+                                                    className="focus:bg-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="Tags eg: tag1,tag2,tag3"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="assessment" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    Assessment (text to help with understanding )
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    onChange={handleChange}
+                                                    name="assessment"
+                                                    value={formValue.assessment}
+                                                    id="title"
+                                                    className="focus:bg-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="Write Assessment"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-6 md:grid-cols-2 ">
+                                            <div className="mb-6">
+                                                <label htmlFor="access_level" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Access Level</label>
+
+                                                <select style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " value={formValue.access_level} required onChange={handleChange} name="access_level">
+                                                    <option>Select Access Level</option>
+                                                    {accessLevel?.map((record, index) => (
+                                                        <option key={index} value={record?.level}>{record?.name} level[{record?.level}] </option>
+                                                    ))}
+
+                                                </select>
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="impact_level" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Impact Level</label>
+
+                                                <select style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " value={formValue.impact_level} required onChange={handleChange} name="impact_level">
+                                                    <option>Select Impact Level</option>
+                                                    {impactLevel?.map((record, index) => (
+                                                        <option key={index} value={record?.level}>{record?.name} level[{record?.level}]</option>
+                                                    ))}
+
+                                                </select>
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="priority_level" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Priority Level</label>
+
+                                                <select style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " value={formValue.priority_level} required onChange={handleChange} name="priority_level">
+                                                    <option>Select Priority Level</option>
+                                                    {priorityLevel?.map((record, index) => (
+                                                        <option key={index} value={record?.level}>{record?.name} level[{record?.level}]</option>
+                                                    ))}
+
+                                                </select>
+                                            </div>
+                                            <div className="mb-6">
+                                                <label htmlFor="status" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Post Status</label>
+
+                                                <select style={{ width: "100%" }} className="border border-gray-200 rounded-lg min-h-[2.5em] " value={formValue.post_status} required onChange={handleChange} name="post_status">
+                                                    <option>Select Status Level</option>
+                                                    {statuses?.map((record, index) => (
+                                                        <option key={index} value={record?.id}>{record?.name} </option>
+                                                    ))}
+
+                                                </select>
+                                            </div>
                                         </div>
                                         <div>
                                             {invalidFields !== "" && (<p className='bg-red-700 shadow text-left p-3 rounded-xl text-white'>{invalidFields}</p>)}
                                         </div>
                                         {/* <div className="absolute bottom-0 left-0 right-0 p-2 "> */}
-                                        <div className=" p-2 ">
-                                            <div className="flex items-start justify-between">
-                                                <span>.</span>
-                                                <div className="flex items-end gap-2">
-
-                                                    <button type="submit" onClick={() => props?.setCurrentPage('list')} className="text-black bg-gray-200 hover:bg-gray-100  font-medium  text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Cancel</button>
-                                                    <button type="submit" onClick={handleSubmit} className="text-white bg-yellow-500 hover:bg-yellow-600  font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit</button>
+                                        {!setupComplete ? <>
+                                            <div className="md:flex items-center justify-center">
+                                                <div className="bg-white  font-semibold text-[1.2em] text-red-500">Please You need to Finish Setup at Settings Before You Can Add A post; Especialy Category, Access Level, Impact Level, Priority Level </div>
+                                            </div>
+                                        </> : <>
+                                            <div className=" p-2 ">
+                                                <div className="flex items-start justify-between">
+                                                    <span>.</span>
+                                                    <div className="flex items-end gap-2">
+                                                        {props.formType == 'add' && (<>
+                                                            <button type="submit" onClick={() => props?.setCurrentPage('list')} className="text-black bg-gray-200 hover:bg-gray-100  font-medium  text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Cancel</button>
+                                                            <button type="submit" onClick={handleSubmit} className="text-white bg-yellow-500 hover:bg-yellow-600  font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center " disabled={pending}>{pending ? "Submitting..." : "Submit"}</button>
+                                                        </>)}
+                                                        {props.formType == 'update' && (<>
+                                                            <button type="submit" onClick={() => props.setShow(false)} className="text-black bg-gray-200 hover:bg-gray-100  font-medium  text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Cancel</button>
+                                                            <button type="submit" onClick={handleUpdate} className="text-white bg-green-500 hover:bg-green-600  font-medium text-sm w-full sm:w-auto px-5 py-2.5 text-center " disabled={pending}>{pending ? "Saving..." : "Save Changes"}</button>
+                                                        </>)}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </>}
                                     </div>
                                 </div>
                             </motion.div>
